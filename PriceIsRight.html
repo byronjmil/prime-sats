@@ -179,14 +179,46 @@
         const increaseNumberWithFee = (n) => {
             if (n >= 10) {
                 if (n === 10) { return (n + 0.49); }
-                if (n > 10 && n <= 25) { return (n + 0.99); }
-                if (n > 25 && n <= 50) { return (n + 1.49); }
-                if (n > 50 && n <= 100) { return (n + 1.99); }
-                if (n > 100 && n <= 200) { return (n / (1 - (2 / 100))); }
-                if (n > 200 && n <= 1000) { return (n / (1 - (1.75 / 100))); }
-                if (n > 1000 && n <= 2000) { return (n / (1 - (1.5 / 100))); }
-                if (n > 1000 && n <= 2000) { return (n / (1 - (1.25 / 100))); }
-                if (n > 1000 && n <= 2000) { return (n / (1 - (1 / 100))); }
+                if (n > 10 && n <= 25) {
+                    let newTotal = (n + 0.99);
+                    if (newTotal > 25) { return undefined }
+                    return newTotal;
+                }
+                if (n > 25 && n <= 50) {
+                    let newTotal = (n + 1.49);
+                    if (newTotal > 50) { return undefined }
+                    return newTotal;
+                }
+                if (n > 50 && n <= 100) {
+                    let newTotal = (n + 1.99);
+                    if (newTotal > 100) { return undefined }
+                    return newTotal;
+                }
+                if (n > 100 && n <= 200) {
+                    let newTotal = (n / (1 - (2 / 100)));
+                    if (newTotal > 200) { return undefined }
+                    return newTotal;
+                }
+                if (n > 200 && n <= 1000) {
+                    let newTotal = (n / (1 - (1.75 / 100)));
+                    if (newTotal > 1000) { return undefined }
+                    return newTotal;
+                }
+                if (n > 1000 && n <= 2000) {
+                    let newTotal = (n / (1 - (1.5 / 100)));
+                    if (newTotal > 2000) { return undefined }
+                    return newTotal;
+                }
+                if (n > 2000 && n <= 3000) {
+                    let newTotal = (n / (1 - (1.25 / 100)));
+                    if (newTotal > 3000) { return undefined }
+                    return newTotal;
+                }
+                if (n > 3000 && n <= 5000) {
+                    let newTotal = (n / (1 - (1 / 100)));
+                    if (newTotal > 5000) { return undefined }
+                    return newTotal;
+                }
                 return (n / (1 - (0.75 / 100)));
             }
             return increaseNumberWithFee(n * 10);
@@ -229,7 +261,9 @@
                     }
                     return 0;
                 });
-                const filteredDivs = sortedPrices.filter(x => (currencyCodesArr.includes(x.currencyCode)));
+                const filteredDivs = sortedPrices.filter(
+                    x => (currencyCodesArr.includes(x.currencyCode)) && x.buyAmountWithFee !== undefined
+                );
                 const divs = filteredDivs.map(
                     x => `<div>${x.currencyCode.toUpperCase()} - :${x.factor.toLocaleString()} - ($${(x.buyAmountWithoutFee.toFixed(2) * 1).toLocaleString()} | $${(x.buyAmountWithFee.toFixed(2) * 1).toLocaleString()})</div>`
                 );
