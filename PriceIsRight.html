@@ -1,35 +1,241 @@
-<div id="app" style="text-align: center;"></div>
-<script>
-	const reduceNumber = (n) => {
-		if(n < 10){return n;}
-		return reduceNumber(n / 10)
-	}
-</script>
-<script>
-	fetch('https://api.coingecko.com/api/v3/coins/bitcoin')
-		.then(r => r.json())
-		.then(j => {
-			const currentPricesObj = j.market_data.current_price;
-			const currentPricesLength = Object.values(currentPricesObj).length;
-			const sortedPrices = [];
-			for(let i = 0; i < currentPricesLength; i+=1){
-				const satsToBTC = 10**8;
-				sortedPrices.push({
-					key: Object.keys(currentPricesObj)[i],
-					value: reduceNumber(Object.values(currentPricesObj)[i])
-				});
-			}
-			sortedPrices.sort((a, b) => {
-				  if (a.value < b.value) {
-				    return -1;
-				  }
-				  if (a.value > b.value) {
-				    return 1;
-				  }
-				  return 0;
-			});
-			const divs = sortedPrices.map(x => `<div>${x.key} ${x.value.toLocaleString()}</div>`);
-			document.getElementById('app').innerHTML = divs.join('<hr />')
-			console.log(divs.join(''));
-		})
-</script>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>The Price Is Right</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <script>
+        const currencyCodesArr = [
+            "USD",
+            "EUR",
+            "AED",
+            "AFN",
+            "ALL",
+            "AMD",
+            "ANG",
+            "AOA",
+            "ARS",
+            "AUD",
+            "AWG",
+            "AZN",
+            "BAM",
+            "BBD",
+            "BDT",
+            "BGN",
+            "BHD",
+            "BIF",
+            "BMD",
+            "BND",
+            "BOB",
+            "BRL",
+            "BSD",
+            "BTN",
+            "BWP",
+            "BYN",
+            "BZD",
+            "CAD",
+            "CDF",
+            "CHF",
+            "CLF",
+            "CLP",
+            "CNY",
+            "COP",
+            "CRC",
+            "CUP",
+            "CVE",
+            "CZK",
+            "DJF",
+            "DKK",
+            "DOP",
+            "DZD",
+            "EGP",
+            "ERN",
+            "ETB",
+            "FJD",
+            "FKP",
+            "GBP",
+            "GEL",
+            "GHS",
+            "GIP",
+            "GMD",
+            "GNF",
+            "GTQ",
+            "GYD",
+            "HKD",
+            "HNL",
+            "HRK",
+            "HTG",
+            "HUF",
+            "IDR",
+            "ILS",
+            "INR",
+            "IQD",
+            "IRR",
+            "IRT",
+            "ISK",
+            "JMD",
+            "JOD",
+            "JPY",
+            "KES",
+            "KGS",
+            "KHR",
+            "KMF",
+            "KPW",
+            "KRW",
+            "KWD",
+            "KYD",
+            "KZT",
+            "LAK",
+            "LBP",
+            "LKR",
+            "LRD",
+            "LSL",
+            "LYD",
+            "MAD",
+            "MDL",
+            "MGA",
+            "MKD",
+            "MMK",
+            "MNT",
+            "MOP",
+            "MRO",
+            "MUR",
+            "MVR",
+            "MWK",
+            "MXN",
+            "MYR",
+            "MZN",
+            "NAD",
+            "NGN",
+            "NIO",
+            "NOK",
+            "NPR",
+            "NZD",
+            "OMR",
+            "PAB",
+            "PEN",
+            "PGK",
+            "PHP",
+            "PKR",
+            "PLN",
+            "PYG",
+            "QAR",
+            "RON",
+            "RSD",
+            "RUB",
+            "RWF",
+            "SAR",
+            "SBD",
+            "SCR",
+            "SDP",
+            "SEK",
+            "SGD",
+            "SHP",
+            "SLL",
+            "SOS",
+            "SRD",
+            "SSP",
+            "STD",
+            "SYP",
+            "SZL",
+            "THB",
+            "TJS",
+            "TMT",
+            "TND",
+            "TOP",
+            "TRY",
+            "TTD",
+            "TWD",
+            "TZS",
+            "UAH",
+            "UGX",
+            "UYU",
+            "UZS",
+            "VEF",
+            "VES",
+            "VND",
+            "VUV",
+            "WST",
+            "XAF",
+            "XAG",
+            "XAU",
+            "XCD",
+            "XOF",
+            "XPF",
+            "YER",
+            "ZAR",
+            "ZMW",
+            "ZWL",
+        ].map(x => x.toLowerCase());
+    </script>
+    <script>
+        const reduceNumber = (n) => {
+            if (n < 10) { return n; }
+            return reduceNumber(n / 10)
+        }
+
+        const increaseNumberWithFee = (n) => {
+            if (n >= 10) {
+                if (n === 10) { return (n + 0.49); }
+                if (n > 10 && n <= 25) { return (n + 0.99); }
+                if (n > 25 && n <= 50) { return (n + 1.49); }
+                if (n > 50 && n <= 100) { return (n + 1.99); }
+                if (n > 100 && n <= 200) { return (n / (1 - (2 / 100))); }
+                if (n > 200 && n <= 1000) { return (n / (1 - (1.75 / 100))); }
+                if (n > 1000 && n <= 2000) { return (n / (1 - (1.5 / 100))); }
+                if (n > 1000 && n <= 2000) { return (n / (1 - (1.25 / 100))); }
+                if (n > 1000 && n <= 2000) { return (n / (1 - (1 / 100))); }
+                return (n / (1 - (0.75 / 100)));
+            }
+            return increaseNumberWithFee(n * 10);
+        }
+        const increaseNumberWithoutFee = (n) => {
+            if (n >= 10) {
+                return n;
+            }
+            return increaseNumberWithoutFee(n * 10);
+        }
+    </script>
+</head>
+
+<body>
+    <div id="app" style="text-align: center;"></div>
+
+    <script>
+        fetch('https://api.coingecko.com/api/v3/coins/bitcoin')
+            .then(r => r.json())
+            .then(j => {
+                const currentPricesObj = j.market_data.current_price;
+                const currentPricesLength = Object.values(currentPricesObj).length;
+                const sortedPrices = [];
+                const btcUSD = currentPricesObj['usd'];
+                for (let i = 0; i < currentPricesLength; i += 1) {
+                    const satsToBTC = 10 ** 8;
+                    sortedPrices.push({
+                        currencyCode: Object.keys(currentPricesObj)[i],
+                        factor: reduceNumber(Object.values(currentPricesObj)[i]),
+                        buyAmountWithoutFee: increaseNumberWithoutFee(btcUSD / Object.values(currentPricesObj)[i]),
+                        buyAmountWithFee: increaseNumberWithFee(btcUSD / Object.values(currentPricesObj)[i]),
+                    });
+                }
+                sortedPrices.sort((a, b) => {
+                    if (a.factor < b.factor) {
+                        return -1;
+                    }
+                    if (a.factor > b.factor) {
+                        return 1;
+                    }
+                    return 0;
+                });
+                const filteredDivs = sortedPrices.filter(x => (currencyCodesArr.includes(x.currencyCode)));
+                const divs = filteredDivs.map(
+                    x => `<div>${x.currencyCode.toUpperCase()} - :${x.factor.toLocaleString()} - ($${(x.buyAmountWithoutFee.toFixed(2) * 1).toLocaleString()} | $${(x.buyAmountWithFee.toFixed(2) * 1).toLocaleString()})</div>`
+                );
+                document.getElementById('app').innerHTML = divs.join('<hr />');
+            })
+    </script>
+</body>
+
+</html>
