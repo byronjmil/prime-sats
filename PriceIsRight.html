@@ -252,7 +252,10 @@
                         buyAmountWithFee: increaseNumberWithFee(btcUSD / Object.values(currentPricesObj)[i]),
                     });
                 }
-                sortedPrices.sort((a, b) => {
+                const filteredDivs = sortedPrices.filter(
+                    x => (currencyCodesArr.includes(x.currencyCode)) && x.buyAmountWithFee !== undefined
+                );
+                filteredDivs.sort((a, b) => {
                     if (a.factor < b.factor) {
                         return -1;
                     }
@@ -261,9 +264,6 @@
                     }
                     return 0;
                 });
-                const filteredDivs = sortedPrices.filter(
-                    x => (currencyCodesArr.includes(x.currencyCode)) && x.buyAmountWithFee !== undefined
-                );
                 const divs = filteredDivs.map(
                     x => `<div>${x.currencyCode.toUpperCase()} - :${x.factor.toLocaleString()} - ($${(x.buyAmountWithoutFee.toFixed(2) * 1).toLocaleString()} | $${(x.buyAmountWithFee.toFixed(2) * 1).toLocaleString()})</div>`
                 );
