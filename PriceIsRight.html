@@ -7,6 +7,11 @@
     <title>The Price Is Right</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <script>
+        const gr1 = ((1 + Math.sqrt(5)) / 2) - 1;
+        const gr2 = gr1 * (1 - gr1);
+        const gr3 = 1 - gr1 - gr2;
+    </script>
+    <script>
         const currencyCodesArr = [
             "USD",
             "EUR",
@@ -177,7 +182,7 @@
         }
 
         const increaseNumberWithFee = (n) => {
-            if (n >= 10) {
+            if (n >= 100) {
                 if (n === 10) { return (n + 0.49); }
                 if (n > 10 && n <= 25) {
                     let newTotal = (n + 0.99);
@@ -224,7 +229,7 @@
             return increaseNumberWithFee(n * 10);
         }
         const increaseNumberWithoutFee = (n) => {
-            if (n >= 10) {
+            if (n >= 100) {
                 return n;
             }
             return increaseNumberWithoutFee(n * 10);
@@ -248,12 +253,17 @@
                     sortedPrices.push({
                         currencyCode: Object.keys(currentPricesObj)[i],
                         factor: reduceNumber(Object.values(currentPricesObj)[i]),
+                        originalPrice: Object.values(currentPricesObj)[i],
                         buyAmountWithoutFee: increaseNumberWithoutFee(btcUSD / Object.values(currentPricesObj)[i]),
                         buyAmountWithFee: increaseNumberWithFee(btcUSD / Object.values(currentPricesObj)[i]),
                     });
                 }
                 const filteredDivs = sortedPrices.filter(
-                    x => (currencyCodesArr.includes(x.currencyCode)) && x.buyAmountWithFee !== undefined
+                    x => (
+                        (currencyCodesArr.includes(x.currencyCode)) &&
+                        x.buyAmountWithFee !== undefined &&
+                        x.buyAmountWithFee <= ((1 - gr1) * (2 * gr3 * 2312.91))
+                    )
                 );
                 filteredDivs.sort((a, b) => {
                     if (a.factor < b.factor) {
